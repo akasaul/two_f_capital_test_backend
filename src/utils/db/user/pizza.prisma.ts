@@ -7,3 +7,8 @@ export async function createPizzaPrisma(pizza: Pizza) {
   });
   return user;
 }
+
+export async function browsePizzaPrisma() {
+  const user = await prisma.pizza.findMany();
+  return user;
+}

@@ -7,6 +7,14 @@ import { createPizzaValidator } from "../../validators/pizza.validator";
 
 const router = Router();
 
+router.get(
+  "/",
+  authenticate,
+  authorize("browse", "Pizza"),
+  validateData(createPizzaValidator),
+  createPizza
+);
+
 router.post(
   "/",
   authenticate,
