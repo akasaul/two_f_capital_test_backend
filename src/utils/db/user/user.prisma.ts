@@ -12,6 +12,9 @@ export default async function userGetEmailPrisma(email: string) {
   if (!email) return null;
   const user = await prisma.user.findUnique({
     where: { email },
+    include: {
+      Role: true,
+    },
   });
   return user;
 }

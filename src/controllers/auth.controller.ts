@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import createUserToken from "../utils/auth/createUserToken";
 import { createRestaurantPrisma } from "../utils/db/user/restaurant.prisma";
+import {
+  createRolePrisma,
+  updateRestaurantRolePrisma,
+} from "../utils/db/user/role.prisma";
 import userGetEmailPrisma, {
   userCreatePrisma,
 } from "../utils/db/user/user.prisma";
 import { compareWithHash, hashPassword } from "../utils/hashPasswords";
+import { restaurantManagerPermissions } from "../utils/permissions";
 import userViewer from "../view/userViewer";
 
 export async function login(req: Request, res: Response, next: NextFunction) {
@@ -18,6 +23,10 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     const token = createUserToken(user);
 
     const userView = userViewer(user, token);
+
+    if (user.Role.restaurantId) {
+      return res.json({ ...userView, restaurantId: user.Role.restaurantId });
+    }
 
     return res.json(userView);
   } catch (error) {
@@ -50,7 +59,49 @@ export async function register(
   }
 }
 
-export async function registerManager(
+export async function registerRestaurantAndManager(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { email, password, firstName, lastName, ...rest } = req.body;
+  try {
+    const hashed = hashPassword(password);
+
+    const role = await createRolePrisma(
+      {
+        name: "restaurantManager",
+        restaurantId: null,
+      },
+      restaurantManagerPermissions
+    );
+
+    const user = await userCreatePrisma({
+      email,
+      password: hashed,
+      firstName,
+      phoneNumber: rest.phoneNumber,
+      lastName,
+      roleId: role.id,
+    });
+
+    const token = createUserToken(user);
+    const userView = userViewer(user, token);
+
+    const restaurant = await createRestaurantPrisma(rest, user.id);
+
+    await updateRestaurantRolePrisma(role.id, restaurant.id);
+
+    return res.status(201).json({
+      user: userView,
+      restaurant,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function registerRestaurantUser(
   req: Request,
   res: Response,
   next: NextFunction
@@ -64,7 +115,7 @@ export async function registerManager(
       firstName,
       phoneNumber: rest.phoneNumber,
       lastName,
-      roleId: 2,
+      roleId: rest.role,
     });
     const token = createUserToken(user);
     const userView = userViewer(user, token);

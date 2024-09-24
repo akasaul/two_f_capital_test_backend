@@ -11,6 +11,18 @@ export const restaurantSignUpSchema = z.object({
   phoneNumber: z.string().min(10),
 });
 
+export const restaurantUserRegisterSchema = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  name: z.string(),
+  role: z.number().min(1),
+  location: z.string(),
+  logo: z.string().url(),
+  email: z.string().email(),
+  password: z.string().min(8),
+  phoneNumber: z.string().min(10),
+});
+
 export const signUpSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
