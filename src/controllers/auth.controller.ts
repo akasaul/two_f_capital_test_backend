@@ -32,7 +32,12 @@ export async function register(
   const { email, password, firstName, lastName } = req.body;
   try {
     const hashed = hashPassword(password);
-    const user = await userCreatePrisma(email, hashed, firstName, lastName);
+    const user = await userCreatePrisma({
+      email,
+      password: hashed,
+      firstName,
+      lastName,
+    });
     const token = createUserToken(user);
     const userView = userViewer(user, token);
 

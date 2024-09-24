@@ -1,13 +1,9 @@
+import { User } from "@prisma/client";
 import prisma from "../prisma";
 
-export async function userCreatePrisma(
-  firstName: string,
-  lastName: string,
-  email: string,
-  password: string
-) {
+export async function userCreatePrisma(userData: Omit<User, "id">) {
   const user = await prisma.user.create({
-    data: { firstName, lastName, email, password },
+    data: { ...userData },
   });
   return user;
 }
