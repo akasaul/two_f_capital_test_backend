@@ -12,6 +12,8 @@ export default function createUserToken(user: User) {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      id: user.id,
+      role: user.roleId,
     },
   };
   const userJSON = JSON.stringify(tokenObject);

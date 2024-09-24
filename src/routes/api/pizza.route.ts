@@ -10,7 +10,7 @@ const router = Router();
 router.post(
   "/",
   authenticate,
-  authorize("create", "pizza"),
+  authorize("createPizza", "Pizza"),
   validateData(createPizzaValidator),
   createPizza
 );

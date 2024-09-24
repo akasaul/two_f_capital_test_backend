@@ -20,7 +20,7 @@ model User {
 model Role {
   id          Int          @id @default(autoincrement())
   name        String       @unique
-  permissions Permission[]
+  permissions Permission[] @relation("RolePermissions")
   User        User[]
 }
 
@@ -30,8 +30,7 @@ model Permission {
   action     String
   subject    String
   conditions Json?
-  roleId     Int
-  role       Role   @relation(fields: [roleId], references: [id])
+  roles      Role[] @relation("RolePermissions")
 }
 
 model Pizza {

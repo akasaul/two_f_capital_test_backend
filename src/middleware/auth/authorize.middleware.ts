@@ -5,7 +5,7 @@ import { defineAbilitiesFor } from "../../utils/abilities";
 export const authorize = (action: string, subject: string) => {
   return async (req: any, res: Response, next: NextFunction) => {
     try {
-      const user = req.auth;
+      const user = req.auth.user;
       const ability: Ability = await defineAbilitiesFor(user);
 
       if (ability.can(action, subject)) {

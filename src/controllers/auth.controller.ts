@@ -37,6 +37,7 @@ export async function register(
       password: hashed,
       firstName,
       lastName,
+      roleId: 1,
     });
     const token = createUserToken(user);
     const userView = userViewer(user, token);
