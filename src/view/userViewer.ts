@@ -5,9 +5,8 @@ export default function userViewer(user: User, token: string) {
     user: {
       email: user.email,
       token: token,
-      username: user.username,
-      bio: user.bio,
-      image: user.image,
+      firstName: user.firstName,
+      lastName: user.lastName,
     },
   };
   return userView;

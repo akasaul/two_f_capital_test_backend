@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import createUserToken from "../utils/auth/createUserToken";
-import userCreatePrisma from "../utils/db/user/userCreatePrisma";
-import userGetEmailPrisma from "../utils/db/user/userGetEmailPrisma";
+import userGetEmailPrisma, {
+  userCreatePrisma,
+} from "../utils/db/user/user.prisma";
 import { compareWithHash, hashPassword } from "../utils/hashPasswords";
 import userViewer from "../view/userViewer";
 
@@ -11,7 +12,6 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     const user = await userGetEmailPrisma(email);
     if (!user) return res.sendStatus(404);
 
-    console.log(password, user.password);
     if (!compareWithHash(password, user.password)) return res.sendStatus(403);
 
     const token = createUserToken(user);
@@ -29,10 +29,10 @@ export async function register(
   res: Response,
   next: NextFunction
 ) {
-  const { email, password, username } = req.body;
+  const { email, password, firstName, lastName } = req.body;
   try {
     const hashed = hashPassword(password);
-    const user = await userCreatePrisma(username, email, hashed);
+    const user = await userCreatePrisma(email, hashed, firstName, lastName);
     const token = createUserToken(user);
     const userView = userViewer(user, token);
 
