@@ -1,4 +1,6 @@
+import { subject } from "@casl/ability";
 import { NextFunction, Request, Response } from "express";
+import { defineAbilitiesForPizza } from "../utils/abilities/pizza";
 import {
   browsePizzaPrisma,
   createPizzaPrisma,
@@ -40,12 +42,19 @@ export async function getPizzaDetails(
   res: Response,
   next: NextFunction
 ) {
+  const ability = defineAbilitiesForPizza(req.auth, req.auth.role.permissions);
+
   try {
-    console.log(req.auth);
     const pizza = await getPizzaDetailsPrisma(parseInt(req.params.id));
+
     if (!pizza) {
       return res.status(404).json({ message: "Not Found" });
     }
+
+    if (ability.cannot("getMy", subject("Pizza", pizza))) {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+
     return res.status(201).json(pizza);
   } catch (error) {
     return next(error);
