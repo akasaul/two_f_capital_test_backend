@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import {
   browsePizzaPrisma,
   createPizzaPrisma,
+  getPizzaDetailsPrisma,
 } from "../utils/db/user/pizza.prisma";
 import { getRestaurantByManagerId } from "../utils/db/user/restaurant.prisma";
 
@@ -29,6 +30,23 @@ export async function browsePizza(
   try {
     const pizzas = await browsePizzaPrisma();
     return res.status(201).json(pizzas);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getPizzaDetails(
+  req: any,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    console.log(req.auth);
+    const pizza = await getPizzaDetailsPrisma(parseInt(req.params.id));
+    if (!pizza) {
+      return res.status(404).json({ message: "Not Found" });
+    }
+    return res.status(201).json(pizza);
   } catch (error) {
     return next(error);
   }

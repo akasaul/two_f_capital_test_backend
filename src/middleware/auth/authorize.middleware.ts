@@ -6,7 +6,8 @@ export const authorize = (action: string, subject: string) => {
   return async (req: any, res: Response, next: NextFunction) => {
     try {
       const user = req.auth.user;
-      const ability: Ability = await defineAbilitiesFor(user);
+
+      const ability: Ability = await defineAbilitiesFor(user, req);
 
       if (ability.can(action, subject)) {
         next();

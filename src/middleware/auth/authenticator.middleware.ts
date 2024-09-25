@@ -8,7 +8,7 @@ if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET missing in environment.");
 }
 
-function getTokenInHeader(req: Request) {
+export function getTokenInHeader(req: Request) {
   const authorization = req.headers.authorization;
   if (!authorization) return;
   if (authorization.split(" ").length != 2) return;

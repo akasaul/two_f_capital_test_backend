@@ -15,7 +15,7 @@ type AppAbility = PureAbility<
   PrismaQuery
 >;
 
-export const defineAbilitiesFor = async (user: User, req: any) => {
+export const definePizzaAbilities = async (user: User, pizza: Pizza) => {
   const { can, cannot, build } = new AbilityBuilder<AppAbility>(
     createPrismaAbility
   );
