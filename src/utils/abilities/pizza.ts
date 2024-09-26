@@ -5,6 +5,7 @@ import {
   Role,
   Topping,
   User,
+  Order,
 } from "@prisma/client";
 import { AbilityBuilder, PureAbility } from "@casl/ability";
 import { createPrismaAbility, PrismaQuery, Subjects } from "@casl/prisma";
@@ -18,6 +19,7 @@ type AppAbility = PureAbility<
       Restaurant: Restaurant;
       Role: Role;
       Topping: Topping;
+      Order: Order;
     }>
   ],
   PrismaQuery

@@ -12,3 +12,14 @@ export async function createToppingPrisma(toppingData: Omit<Topping, "id">) {
   });
   return topping;
 }
+
+export async function getToppingsWithIds(toppingIds: number[]) {
+  const toppings = await prisma.topping.findMany({
+    where: {
+      id: {
+        in: toppingIds,
+      },
+    },
+  });
+  return toppings;
+}

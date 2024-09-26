@@ -17,6 +17,7 @@ model User {
   roleId      Int
   Role        Role         @relation(fields: [roleId], references: [id])
   Restaurant  Restaurant[]
+  Order       Order[]
 }
 
 model Role {
@@ -46,6 +47,7 @@ model Pizza {
   Restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   restaurantId Int
   toppings     Topping[]  @relation("PizzaToppings")
+  Order        Order[]
 }
 
 model Topping {
@@ -55,6 +57,7 @@ model Topping {
   pizzas       Pizza[]    @relation("PizzaToppings")
   Restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   restaurantId Int
+  orders       Order[]    @relation("OrderToppings")
 }
 
 model Restaurant {
@@ -68,4 +71,17 @@ model Restaurant {
   pizzas      Pizza[]
   Role        Role[]
   Topping     Topping[]
+  Order       Order[]
+}
+
+model Order {
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  qty          Int
+  user         User       @relation(fields: [userId], references: [id])
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  pizzaId      Int
+  pizza        Pizza      @relation(fields: [pizzaId], references: [id])
+  toppings     Topping[]  @relation("OrderToppings")
 }

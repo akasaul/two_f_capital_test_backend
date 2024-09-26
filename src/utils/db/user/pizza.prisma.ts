@@ -33,3 +33,15 @@ export async function getPizzaDetailsPrisma(id: number) {
   });
   return user;
 }
+
+export async function getPizzaById(id: number) {
+  const pizza = await prisma.pizza.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      toppings: true,
+    },
+  });
+  return pizza;
+}
