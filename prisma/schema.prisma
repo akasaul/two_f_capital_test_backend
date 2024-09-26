@@ -49,20 +49,23 @@ model Pizza {
 }
 
 model Topping {
-  id     Int     @id @default(autoincrement())
-  name   String
-  price  Float
-  pizzas Pizza[] @relation("PizzaToppings")
+  id           Int        @id @default(autoincrement())
+  name         String
+  price        Float
+  pizzas       Pizza[]    @relation("PizzaToppings")
+  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
 }
 
 model Restaurant {
-  id          Int     @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   location    String
   logo        String
-  phoneNumber String  @unique
-  manager     User    @relation(fields: [managerId], references: [id])
+  phoneNumber String    @unique
+  manager     User      @relation(fields: [managerId], references: [id])
   managerId   Int
   pizzas      Pizza[]
   Role        Role[]
+  Topping     Topping[]
 }

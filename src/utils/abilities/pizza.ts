@@ -1,4 +1,11 @@
-import { Permission, Pizza, Restaurant, Role, User } from "@prisma/client";
+import {
+  Permission,
+  Pizza,
+  Restaurant,
+  Role,
+  Topping,
+  User,
+} from "@prisma/client";
 import { AbilityBuilder, PureAbility } from "@casl/ability";
 import { createPrismaAbility, PrismaQuery, Subjects } from "@casl/prisma";
 
@@ -10,6 +17,7 @@ type AppAbility = PureAbility<
       Pizza: Pizza;
       Restaurant: Restaurant;
       Role: Role;
+      Topping: Topping;
     }>
   ],
   PrismaQuery

@@ -1,6 +1,6 @@
 import prisma from "./db/prisma";
-import { Pizza, Restaurant, User } from "@prisma/client";
-import { AbilityBuilder, Ability, PureAbility } from "@casl/ability";
+import { Pizza, Restaurant, Topping, User } from "@prisma/client";
+import { AbilityBuilder, PureAbility } from "@casl/ability";
 import { createPrismaAbility, PrismaQuery, Subjects } from "@casl/prisma";
 
 type AppAbility = PureAbility<
@@ -10,6 +10,7 @@ type AppAbility = PureAbility<
       User: User;
       Pizza: Pizza;
       Restaurant: Restaurant;
+      Topping: Topping;
     }>
   ],
   PrismaQuery

@@ -9,7 +9,12 @@ import {
 import { getRestaurantByManagerId } from "../utils/db/user/restaurant.prisma";
 
 export async function createPizza(req: any, res: Response, next: NextFunction) {
+  const ability = defineAbilitiesFor(req.auth);
   try {
+    if (ability.cannot("create", "Pizza")) {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+
     const restaurant = await getRestaurantByManagerId(req.auth.user.id);
     const pizza = await createPizzaPrisma(
       {
