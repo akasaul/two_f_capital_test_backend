@@ -52,6 +52,13 @@ export const defineAbilitiesFor = (user: PopulatedUser) => {
         restaurantId: user.role.restaurantId ?? 0,
       });
     } else if (
+      permission.action == "update" &&
+      permission.subject === "Order"
+    ) {
+      can("update", "Order", {
+        restaurantId: user.role.restaurantId ?? 0,
+      });
+    } else if (
       permission.action == "createRole" &&
       permission.subject === "Restaurant"
     ) {

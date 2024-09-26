@@ -74,14 +74,21 @@ model Restaurant {
   Order       Order[]
 }
 
+enum OrderStatus {
+  PENDING
+  DELIVERED
+  PREPARING
+}
+
 model Order {
-  id           Int        @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   userId       Int
   qty          Int
-  user         User       @relation(fields: [userId], references: [id])
+  user         User        @relation(fields: [userId], references: [id])
   restaurantId Int
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
   pizzaId      Int
-  pizza        Pizza      @relation(fields: [pizzaId], references: [id])
-  toppings     Topping[]  @relation("OrderToppings")
+  pizza        Pizza       @relation(fields: [pizzaId], references: [id])
+  toppings     Topping[]   @relation("OrderToppings")
+  status       OrderStatus @default(PENDING)
 }
