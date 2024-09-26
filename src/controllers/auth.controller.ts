@@ -1,8 +1,11 @@
+import { subject } from "@casl/ability";
 import { NextFunction, Request, Response } from "express";
+import { defineAbilitiesFor } from "../utils/abilities/pizza";
 import createUserToken from "../utils/auth/createUserToken";
 import { createRestaurantPrisma } from "../utils/db/user/restaurant.prisma";
 import {
   createRolePrisma,
+  getRoleById,
   updateRestaurantRolePrisma,
 } from "../utils/db/user/role.prisma";
 import userGetEmailPrisma, {
@@ -72,6 +75,7 @@ export async function registerRestaurantAndManager(
       {
         name: "restaurantManager",
         restaurantId: null,
+        isActive: true,
       },
       restaurantManagerPermissions
     );
@@ -106,18 +110,29 @@ export async function registerRestaurantUser(
   res: Response,
   next: NextFunction
 ) {
+  const ability = defineAbilitiesFor(req.auth);
   const { email, password, firstName, lastName, role, phoneNumber } = req.body;
 
   try {
+    const selectedRole = await getRoleById(role);
+    if (!selectedRole) {
+      return res.status(404).json({ message: "Role not found" });
+    }
     const hashed = hashPassword(password);
-    const user = await userCreatePrisma({
+    const newUser = {
       email,
       password: hashed,
       firstName,
       phoneNumber: phoneNumber,
       lastName,
       roleId: role,
-    });
+    };
+
+    if (ability.cannot("createUser", subject("Role", selectedRole))) {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+
+    const user = await userCreatePrisma(newUser);
     const token = createUserToken(user);
     const userView = userViewer(user, token);
 

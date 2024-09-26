@@ -1,6 +1,6 @@
 import { subject } from "@casl/ability";
 import { NextFunction, Request, Response } from "express";
-import { defineAbilitiesForPizza } from "../utils/abilities/pizza";
+import { defineAbilitiesFor } from "../utils/abilities/pizza";
 import {
   browsePizzaPrisma,
   createPizzaPrisma,
@@ -42,7 +42,7 @@ export async function getPizzaDetails(
   res: Response,
   next: NextFunction
 ) {
-  const ability = defineAbilitiesForPizza(req.auth, req.auth.role.permissions);
+  const ability = defineAbilitiesFor(req.auth);
 
   try {
     const pizza = await getPizzaDetailsPrisma(parseInt(req.params.id));

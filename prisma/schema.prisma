@@ -22,8 +22,9 @@ model User {
 model Role {
   id           Int          @id @default(autoincrement())
   name         String
+  isActive     Boolean      @default(true)
   permissions  Permission[] @relation("RolePermissions")
-  User         User[]
+  priceUser    User[]
   restaurantId Int?
   Restaurant   Restaurant?  @relation(fields: [restaurantId], references: [id])
 }

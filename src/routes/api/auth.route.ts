@@ -5,8 +5,8 @@ import {
   registerRestaurantAndManager,
   registerRestaurantUser,
 } from "../../controllers/auth.controller";
+import { attachRole } from "../../middleware/auth/attachRole.middleware";
 import { authenticate } from "../../middleware/auth/authenticator.middleware";
-import { authorize } from "../../middleware/auth/authorize.middleware";
 import validateData from "../../middleware/validators/validateData.middleware";
 import {
   loginSchema,
@@ -30,9 +30,9 @@ router.post(
 router.post(
   "/register-restaurant-user",
   authenticate,
-  authorize("createUser", "Role"),
-  validateData(restaurantUserRegisterSchema)
-  // registerRestaurantUser
+  attachRole(),
+  validateData(restaurantUserRegisterSchema),
+  registerRestaurantUser
 );
 
 export default router;

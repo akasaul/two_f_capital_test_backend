@@ -9,32 +9,62 @@ type AppAbility = PureAbility<
       User: User;
       Pizza: Pizza;
       Restaurant: Restaurant;
+      Role: Role;
     }>
   ],
   PrismaQuery
 >;
 
-interface PopulatedUser extends User {
-  role: Role;
+interface PopulatedRole extends Role {
+  permissions: Permission[];
 }
 
-export const defineAbilitiesForPizza = (
-  user: PopulatedUser,
-  permissions: Permission[]
-) => {
-  const { can, build } = new AbilityBuilder<AppAbility>(
+interface PopulatedUser {
+  user: User;
+  role: PopulatedRole;
+}
+
+export const defineAbilitiesFor = (user: PopulatedUser) => {
+  const { can, cannot, build } = new AbilityBuilder<AppAbility>(
     createPrismaAbility
   );
 
-  permissions.forEach((permission) => {
+  user.role.permissions.forEach((permission) => {
     if (permission.action === "getMy") {
       can("getMy", "Pizza", {
         restaurantId: user.role.restaurantId ?? 0,
+      });
+    } else if (
+      permission.action == "createUser" &&
+      permission.subject === "Role"
+    ) {
+      can("createUser", "Role", {
+        restaurantId: user.role.restaurantId ?? 0,
+      });
+    } else if (
+      permission.action == "createRole" &&
+      permission.subject === "Restaurant"
+    ) {
+      can("createRole", "Restaurant", {
+        managerId: user.user.id,
+      });
+    } else if (
+      permission.action == "manageRole" &&
+      permission.subject === "Role"
+    ) {
+      can("manageRole", "Role", {
+        restaurantId: user.role.restaurantId,
       });
     } else {
       can(permission.action, permission.subject as "User" | "Pizza");
     }
   });
+
+  if (!user.role.isActive) {
+    user.role.permissions.forEach((permission) => {
+      cannot(permission.action, permission.subject as "User" | "Pizza");
+    });
+  }
 
   return build();
 };

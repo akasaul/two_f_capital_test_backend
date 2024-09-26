@@ -1,6 +1,8 @@
 import express from "express";
 import authRouter from "./routes/api/auth.route";
 import pizzaRouter from "./routes/api/pizza.route";
+import roleRouter from "./routes/api/role.route";
+
 import generalErrorHandler from "./middleware/errorHandling/generalErrorHandler";
 import {
   authErrorHandler,
@@ -13,6 +15,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/pizzas", pizzaRouter);
+app.use("/api/roles", roleRouter);
 
 app.get("/", function (_req, res) {
   return res.send("Hello World!");
