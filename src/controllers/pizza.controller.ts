@@ -5,8 +5,10 @@ import {
   browsePizzaPrisma,
   createPizzaPrisma,
   getPizzaDetailsPrisma,
+  getPopularPizzasPrisma,
 } from "../utils/db/user/pizza.prisma";
 import { getRestaurantByManagerId } from "../utils/db/user/restaurant.prisma";
+import { PopularPizzaView } from "../view/pizzaViewer";
 
 export async function createPizza(req: any, res: Response, next: NextFunction) {
   const ability = defineAbilitiesFor(req.auth);
@@ -61,6 +63,22 @@ export async function getPizzaDetails(
     }
 
     return res.status(201).json(pizza);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getPopularPizzas(
+  req: any,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const pizzas = await getPopularPizzasPrisma();
+    const pizzaView = pizzas.map(({ toppings, Restaurant, ...rest }) =>
+      PopularPizzaView(rest, toppings, Restaurant)
+    );
+    return res.status(201).json(pizzaView);
   } catch (error) {
     return next(error);
   }

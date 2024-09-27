@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+import path from "path";
 import authRouter from "./routes/api/auth.route";
 import pizzaRouter from "./routes/api/pizza.route";
 import roleRouter from "./routes/api/role.route";
@@ -11,9 +13,15 @@ import {
   prismaErrorHandler,
 } from "./middleware/errorHandling";
 
+const corsOptions = {
+  origin: "*",
+};
+
 const app = express();
 
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use("/static", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api/auth", authRouter);
 app.use("/api/pizzas", pizzaRouter);

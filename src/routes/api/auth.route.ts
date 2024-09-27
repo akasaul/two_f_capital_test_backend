@@ -14,6 +14,8 @@ import {
   restaurantUserRegisterSchema,
   signUpSchema,
 } from "../../validators/auth.validator";
+import { uploadImage } from "../../utils/multer";
+import { attachFilePath } from "../../middleware/auth/attachFileUrl.middleware";
 
 const router = Router();
 
@@ -23,6 +25,8 @@ router.post("/register", validateData(signUpSchema), register);
 
 router.post(
   "/register-restaurant",
+  uploadImage.single("logo"),
+  attachFilePath("logo"),
   validateData(restaurantSignUpSchema),
   registerRestaurantAndManager
 );

@@ -24,14 +24,24 @@ export async function browsePizzaPrisma() {
   return user;
 }
 
+export async function getPopularPizzasPrisma() {
+  const pizzas = await prisma.pizza.findMany({
+    include: {
+      toppings: true,
+      Restaurant: true,
+    },
+  });
+  return pizzas;
+}
+
 export async function getPizzaDetailsPrisma(id: number) {
-  const user = await prisma.pizza.findFirst({
+  const pizzas = await prisma.pizza.findFirst({
     where: { id },
     include: {
       toppings: true,
     },
   });
-  return user;
+  return pizzas;
 }
 
 export async function getPizzaById(id: number) {
