@@ -3,6 +3,7 @@ import {
   assignPermissions,
   assignRole,
   createRole,
+  getRoles,
 } from "../../controllers/role.controller";
 import { attachRole } from "../../middleware/auth/attachRole.middleware";
 import { authenticate } from "../../middleware/auth/authenticator.middleware";
@@ -22,6 +23,8 @@ router.post(
   validateData(createRoleValidator),
   createRole
 );
+
+router.get("/", authenticate, attachRole(), getRoles);
 
 router.put(
   "/assign",

@@ -8,6 +8,9 @@ import {
 } from "../../validators/order.validator";
 import {
   createOrder,
+  getMyOrders,
+  getOrderDetails,
+  getOrdersRestaurant,
   updateOrderStatus,
 } from "../../controllers/order.controller";
 
@@ -20,6 +23,12 @@ router.post(
   validateData(createOrderValidator),
   createOrder
 );
+
+router.get("/my", authenticate, attachRole(), getMyOrders);
+
+router.get("/restaurant", authenticate, attachRole(), getOrdersRestaurant);
+
+router.get("/:orderId", authenticate, attachRole(), getOrderDetails);
 
 router.put(
   "/:orderId",

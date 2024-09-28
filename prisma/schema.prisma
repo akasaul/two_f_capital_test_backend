@@ -91,4 +91,5 @@ model Order {
   pizza        Pizza       @relation(fields: [pizzaId], references: [id])
   toppings     Topping[]   @relation("OrderToppings")
   status       OrderStatus @default(PENDING)
+  createdAt    DateTime    @default(now())
 }

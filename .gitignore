@@ -39,3 +39,5 @@ logs/
 
 #Database
 prisma/dev.db
+
+

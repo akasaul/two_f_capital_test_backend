@@ -8,7 +8,7 @@ import {
   getPopularPizzasPrisma,
 } from "../utils/db/user/pizza.prisma";
 import { getRestaurantByManagerId } from "../utils/db/user/restaurant.prisma";
-import { PopularPizzaView } from "../view/pizzaViewer";
+import { PizzaDetailsView, PopularPizzaView } from "../view/pizzaViewer";
 
 export async function createPizza(req: any, res: Response, next: NextFunction) {
   const ability = defineAbilitiesFor(req.auth);
@@ -49,8 +49,6 @@ export async function getPizzaDetails(
   res: Response,
   next: NextFunction
 ) {
-  const ability = defineAbilitiesFor(req.auth);
-
   try {
     const pizza = await getPizzaDetailsPrisma(parseInt(req.params.id));
 
@@ -58,11 +56,9 @@ export async function getPizzaDetails(
       return res.status(404).json({ message: "Not Found" });
     }
 
-    if (ability.cannot("getMy", subject("Pizza", pizza))) {
-      return res.status(403).json({ message: "Forbidden: Access denied" });
-    }
+    const pizzaDetails = PizzaDetailsView(pizza, pizza.toppings);
 
-    return res.status(201).json(pizza);
+    return res.status(201).json(pizzaDetails);
   } catch (error) {
     return next(error);
   }

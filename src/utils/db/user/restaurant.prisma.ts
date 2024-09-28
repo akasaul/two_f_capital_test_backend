@@ -24,3 +24,21 @@ export async function getRestaurantByIdPrisma(id: number) {
   });
   return restaurant;
 }
+
+export async function getTopRestaurantsPrisma() {
+  const restaurants = await prisma.restaurant.findMany({
+    include: {
+      _count: {
+        select: {
+          Order: true,
+        },
+      },
+    },
+    orderBy: {
+      Order: {
+        _count: "desc",
+      },
+    },
+  });
+  return restaurants;
+}

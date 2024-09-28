@@ -35,13 +35,13 @@ export async function getPopularPizzasPrisma() {
 }
 
 export async function getPizzaDetailsPrisma(id: number) {
-  const pizzas = await prisma.pizza.findFirst({
+  const pizza = await prisma.pizza.findUnique({
     where: { id },
     include: {
       toppings: true,
     },
   });
-  return pizzas;
+  return pizza;
 }
 
 export async function getPizzaById(id: number) {

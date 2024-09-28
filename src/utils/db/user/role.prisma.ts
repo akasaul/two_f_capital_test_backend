@@ -1,4 +1,5 @@
 import { Role } from "@prisma/client";
+import { Pagination } from "../../types";
 import prisma from "../prisma";
 
 export async function createRolePrisma(
@@ -64,4 +65,20 @@ export async function updateRestaurantRolePrisma(
     where: { id: roleId },
     data: { restaurantId },
   });
+}
+
+export async function getRolesByRestaurantIdPrisma(
+  restaurantId: number,
+  pagination: Pagination
+) {
+  const { page, limit } = pagination;
+  const roles = await prisma.role.findMany({
+    where: { restaurantId },
+    include: {
+      permissions: true,
+    },
+    skip: (page - 1) * limit,
+    take: limit,
+  });
+  return roles;
 }

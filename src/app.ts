@@ -3,6 +3,7 @@ import cors from "cors";
 import path from "path";
 import authRouter from "./routes/api/auth.route";
 import pizzaRouter from "./routes/api/pizza.route";
+import restuantRouter from "./routes/api/restaurant.route";
 import roleRouter from "./routes/api/role.route";
 import toppingRouter from "./routes/api/topping.route";
 import orderRouter from "./routes/api/order.route";
@@ -25,6 +26,7 @@ app.use("/static", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api/auth", authRouter);
 app.use("/api/pizzas", pizzaRouter);
+app.use("/api/restaurants", restuantRouter);
 app.use("/api/roles", roleRouter);
 app.use("/api/toppings", toppingRouter);
 app.use("/api/orders", orderRouter);

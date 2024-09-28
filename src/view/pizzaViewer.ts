@@ -17,9 +17,29 @@ export const PopularPizzaView = (
     pizzaCover: pizza.pizzaCover,
     toppings: toppings.map((topping) => topping.name),
     restaurant: {
-     logo: restaurant.logo,
-      name: restaurant.name
-    }
+      logo: restaurant.logo,
+      name: restaurant.name,
+    },
   };
+  return pizzaView;
+};
+
+export const PizzaDetailsView = (pizza: Pizza, toppings: Topping[]) => {
+  let sum = 0;
+  toppings.forEach((topping) => {
+    sum += topping.price;
+  });
+
+  const pizzaView = {
+    id: pizza.id,
+    name: pizza.name,
+    price: pizza.price + sum,
+    pizzaCover: pizza.pizzaCover,
+    toppings: toppings.map((topping) => ({
+      id: topping.id,
+      name: topping.name,
+    })),
+  };
+
   return pizzaView;
 };
