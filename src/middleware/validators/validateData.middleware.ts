@@ -5,7 +5,7 @@ import httpStatus from "http-status";
 const validateData = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse(req.body);
+      schema.parse({ ...req.body, ...req.params, ...req.query });
       next();
     } catch (error) {
       if (error instanceof ZodError) {

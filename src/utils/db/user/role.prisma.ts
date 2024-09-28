@@ -42,16 +42,22 @@ export const getRoleById = async (roleId: number) => {
 
 export async function updateRolePermissionsPrisma(
   id: number,
-  permissions: number[]
+  permissions?: number[],
+  name?: string
 ) {
   const role = await prisma.role.update({
     where: {
       id,
     },
     data: {
-      permissions: {
-        connect: permissions.map((permission) => ({ id: permission })),
-      },
+      ...(name && {name}),
+      ...(permissions &&
+      {
+          permissions: {
+            connect: permissions.map((permission) => ({ id: permission })),
+          },
+        }
+      )
     },
   });
   return role;
@@ -69,11 +75,25 @@ export async function updateRestaurantRolePrisma(
 
 export async function getRolesByRestaurantIdPrisma(
   restaurantId: number,
-  pagination: Pagination
+  pagination: Pagination,
+  filters: {
+    isActive?: string;
+    search?: string;
+  }
 ) {
   const { page, limit } = pagination;
   const roles = await prisma.role.findMany({
-    where: { restaurantId },
+    where: {
+      restaurantId,
+      ...(filters.isActive && {
+        isActive: filters.isActive === "true" ? true : false,
+      }),
+      ...(filters.search && {
+        name: {
+          contains: filters.search
+        }
+      }),
+    },
     include: {
       permissions: true,
     },

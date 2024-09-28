@@ -5,6 +5,7 @@ export const getRolesViewer = (role: Role) => {
     id: role.id,
     name: role.name,
     isActive: role.isActive,
+    createdAt: role.createdAt,
   };
   return roleView;
 };

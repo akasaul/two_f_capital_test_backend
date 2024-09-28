@@ -76,6 +76,7 @@ export async function registerRestaurantAndManager(
         name: "restaurantManager",
         restaurantId: null,
         isActive: true,
+        createdAt: new Date(),
       },
       restaurantManagerPermissions
     );

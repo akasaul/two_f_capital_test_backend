@@ -20,6 +20,7 @@ type AppAbility = PureAbility<
       Role: Role;
       Topping: Topping;
       Order: Order;
+      Permission: Permission;
     }>
   ],
   PrismaQuery
@@ -65,7 +66,17 @@ export const defineAbilitiesFor = (user: PopulatedUser) => {
       can("readDetails", "Order", {
         restaurantId: user.role.restaurantId ?? 0,
       });
-    } else if (
+    } 
+
+else if (
+      permission.action == "readPermission" &&
+      permission.subject === "Role"
+    ) {
+      can("readPermission", "Role", {
+        restaurantId: user.role.restaurantId ?? 0,
+      });
+    } 
+    else if (
       permission.action == "createRole" &&
       permission.subject === "Restaurant"
     ) {

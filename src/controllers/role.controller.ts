@@ -2,6 +2,7 @@ import { subject } from "@casl/ability";
 import { NextFunction, Response } from "express";
 import { PAGINATION } from "../utils/abilities/constants";
 import { defineAbilitiesFor } from "../utils/abilities/pizza";
+import { getAllPermissionsPrisma } from "../utils/db/user/permissions.prisma";
 import { getRestaurantByManagerId } from "../utils/db/user/restaurant.prisma";
 import {
   createRolePrisma,
@@ -32,7 +33,7 @@ export async function createRole(req: any, res: Response, next: NextFunction) {
     }
 
     const role = await createRolePrisma(
-      { name, restaurantId: req.auth.role.restaurantId, isActive: true },
+      { name, restaurantId: req.auth.role.restaurantId, isActive: true, createdAt: new Date() },
       permissions
     );
     return res.status(201).json(role);
@@ -74,12 +75,12 @@ export async function assignRole(req: any, res: Response, next: NextFunction) {
   }
 }
 
-export async function assignPermissions(
+export async function updateRole(
   req: any,
   res: Response,
   next: NextFunction
 ) {
-  const { roleId, permissions } = req.body;
+  const { roleId, permissions, name } = req.body;
 
   const ability = defineAbilitiesFor(req.auth);
   const role = await getRoleById(roleId);
@@ -93,7 +94,7 @@ export async function assignPermissions(
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
 
-    const updatedRole = await updateRolePermissionsPrisma(roleId, permissions);
+    const updatedRole = await updateRolePermissionsPrisma(roleId, permissions, name);
     return res.status(201).json(updatedRole);
   } catch (error) {
     return next(error);
@@ -101,7 +102,7 @@ export async function assignPermissions(
 }
 
 export async function getRoles(req: any, res: Response, next: NextFunction) {
-  const { page, limit } = req.query;
+  const { page, limit, isActive, search } = req.query;
 
   const paginationInfo = {
     page: page ? Number(page) : PAGINATION.defaultPage,
@@ -117,7 +118,11 @@ export async function getRoles(req: any, res: Response, next: NextFunction) {
 
     const roles = await getRolesByRestaurantIdPrisma(
       req.auth.role.restaurantId,
-      paginationInfo
+      paginationInfo,
+      {
+        isActive,
+        search
+      }
     );
 
     const rolesView = roles.map((role) => getRolesViewer(role));
@@ -125,6 +130,41 @@ export async function getRoles(req: any, res: Response, next: NextFunction) {
     return res
       .status(200)
       .json({ data: rolesView, pagination: paginationInfo });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
+export async function getRolePermissions(req: any, res: Response, next: NextFunction) {
+  const {roleId} = req.params;
+
+  const ability = defineAbilitiesFor(req.auth);
+
+  try {
+    const role = await getRoleById(parseInt( roleId ))
+
+    if(!role) {
+      return res.status(404).json({ message: "Role Not Found!" });
+    }
+
+    if (ability.cannot("readPermission", subject("Role", role))) {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+
+    const allPermissions = await getAllPermissionsPrisma()
+
+    const permissions = allPermissions.map((permission ) => (
+      {
+            "id": permission.id,
+    "name": permission.name,
+        isSelected: role.permissions.find(perm => perm.id === permission.id)   ? true: false
+      }
+    ))
+
+    return res
+      .status(200)
+      .json(permissions);
   } catch (error) {
     return next(error);
   }

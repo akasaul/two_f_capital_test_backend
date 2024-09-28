@@ -4,6 +4,7 @@ import { attachRole } from "../../middleware/auth/attachRole.middleware";
 import validateData from "../../middleware/validators/validateData.middleware";
 import {
   createOrderValidator,
+  getRestaurantOrderValidator,
   updateOrderStatusValidator,
 } from "../../validators/order.validator";
 import {
@@ -26,7 +27,13 @@ router.post(
 
 router.get("/my", authenticate, attachRole(), getMyOrders);
 
-router.get("/restaurant", authenticate, attachRole(), getOrdersRestaurant);
+router.get(
+  "/restaurant",
+  authenticate,
+  attachRole(),
+  validateData(getRestaurantOrderValidator),
+  getOrdersRestaurant
+);
 
 router.get("/:orderId", authenticate, attachRole(), getOrderDetails);
 

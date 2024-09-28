@@ -28,15 +28,15 @@ model Role {
   priceUser    User[]
   restaurantId Int?
   Restaurant   Restaurant?  @relation(fields: [restaurantId], references: [id])
+  createdAt    DateTime     @default(now())
 }
 
 model Permission {
-  id         Int    @id @default(autoincrement())
-  name       String
-  action     String
-  subject    String
-  conditions Json?
-  roles      Role[] @relation("RolePermissions")
+  id      Int    @id @default(autoincrement())
+  name    String
+  action  String
+  subject String
+  roles   Role[] @relation("RolePermissions")
 }
 
 model Pizza {
