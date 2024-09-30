@@ -8,6 +8,7 @@ import {
   getPopularPizzasPrisma,
 } from "../utils/db/user/pizza.prisma";
 import { getRestaurantByManagerId } from "../utils/db/user/restaurant.prisma";
+import { getAvailableToppings } from "../utils/db/user/toppings.prisma";
 import { PizzaDetailsView, PopularPizzaView } from "../view/pizzaViewer";
 
 export async function createPizza(req: any, res: Response, next: NextFunction) {
@@ -56,7 +57,16 @@ export async function getPizzaDetails(
       return res.status(404).json({ message: "Not Found" });
     }
 
-    const pizzaDetails = PizzaDetailsView(pizza, pizza.toppings);
+    const allToppings = await getAvailableToppings();
+
+    const toppings = allToppings.map((allTopping) => ({
+      ...allTopping,
+      isDefault: pizza.toppings.find((topping) => topping.id === allTopping.id)
+        ? true
+        : false,
+    }));
+
+    const pizzaDetails = PizzaDetailsView(pizza, toppings);
 
     return res.status(201).json(pizzaDetails);
   } catch (error) {
