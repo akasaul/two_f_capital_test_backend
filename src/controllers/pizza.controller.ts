@@ -8,7 +8,7 @@ import {
   getPopularPizzasPrisma,
 } from "../utils/db/user/pizza.prisma";
 import { getRestaurantByManagerId } from "../utils/db/user/restaurant.prisma";
-import { getAvailableToppings } from "../utils/db/user/toppings.prisma";
+import { getAvailableToppingsForARestaurant } from "../utils/db/user/toppings.prisma";
 import { PizzaDetailsView, PopularPizzaView } from "../view/pizzaViewer";
 
 export async function createPizza(req: any, res: Response, next: NextFunction) {
@@ -19,12 +19,20 @@ export async function createPizza(req: any, res: Response, next: NextFunction) {
     }
 
     const restaurant = await getRestaurantByManagerId(req.auth.user.id);
+
+    const { toppings } = req.body;
+
+    const toppingsIds = JSON.parse(toppings);
+
     const pizza = await createPizzaPrisma(
       {
         ...req.body,
+        price: parseInt(req.body.price),
+        toppings: Object.values(toppingsIds),
         restaurantId: restaurant?.id,
       },
-      req.body.toppings
+      Object.values(toppingsIds)
+      // req.body.toppings
     );
     return res.status(201).json(pizza);
   } catch (error) {
@@ -57,7 +65,9 @@ export async function getPizzaDetails(
       return res.status(404).json({ message: "Not Found" });
     }
 
-    const allToppings = await getAvailableToppings();
+    const allToppings = await getAvailableToppingsForARestaurant(
+      pizza.restaurantId
+    );
 
     const toppings = allToppings.map((allTopping) => ({
       ...allTopping,

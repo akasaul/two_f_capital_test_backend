@@ -124,7 +124,7 @@ export const getOrdersRestaurant = async (
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
 
-    const orders = await getOrdersRestaurantPrisma(
+    const { orders, rowCount } = await getOrdersRestaurantPrisma(
       req.auth.user.restaurantId,
       paginationInfo,
       search,
@@ -146,7 +146,10 @@ export const getOrdersRestaurant = async (
 
     return res
       .status(200)
-      .json({ data: restaurantOrdersViewer, pagination: paginationInfo });
+      .json({
+        data: restaurantOrdersViewer,
+        pagination: { ...paginationInfo, rowCount },
+      });
   } catch (error) {
     return next(error);
   }

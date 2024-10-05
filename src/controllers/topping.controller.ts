@@ -1,7 +1,10 @@
 import { NextFunction, Response } from "express";
 import { defineAbilitiesFor } from "../utils/abilities/pizza";
 import { getRestaurantByIdPrisma } from "../utils/db/user/restaurant.prisma";
-import { createToppingPrisma } from "../utils/db/user/toppings.prisma";
+import {
+  createToppingPrisma,
+  getToppingsFromRestaurantPrisma,
+} from "../utils/db/user/toppings.prisma";
 
 export async function createTopping(
   req: any,
@@ -23,6 +26,22 @@ export async function createTopping(
     }
 
     const topping = await createToppingPrisma({ name, price, restaurantId });
+
+    return res.status(201).json(topping);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getRestaurantToppings(
+  req: any,
+  res: Response,
+  next: NextFunction
+) {
+  const restaurantId = req.auth.role.restaurantId;
+
+  try {
+    const topping = await getToppingsFromRestaurantPrisma(restaurantId);
 
     return res.status(201).json(topping);
   } catch (error) {

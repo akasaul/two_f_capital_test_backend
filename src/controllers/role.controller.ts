@@ -5,10 +5,12 @@ import { defineAbilitiesFor } from "../utils/abilities/pizza";
 import { getAllPermissionsPrisma } from "../utils/db/user/permissions.prisma";
 import { getRestaurantByManagerId } from "../utils/db/user/restaurant.prisma";
 import {
+  changeRoleActivityPrisma,
   createRolePrisma,
   getRoleById,
   getRolesByRestaurantIdPrisma,
   updateRolePermissionsPrisma,
+  updateRolePrisma,
 } from "../utils/db/user/role.prisma";
 import {
   userGetByIdPrisma,
@@ -33,7 +35,12 @@ export async function createRole(req: any, res: Response, next: NextFunction) {
     }
 
     const role = await createRolePrisma(
-      { name, restaurantId: req.auth.role.restaurantId, isActive: true, createdAt: new Date() },
+      {
+        name,
+        restaurantId: req.auth.role.restaurantId,
+        isActive: true,
+        createdAt: new Date(),
+      },
       permissions
     );
     return res.status(201).json(role);
@@ -75,11 +82,7 @@ export async function assignRole(req: any, res: Response, next: NextFunction) {
   }
 }
 
-export async function updateRole(
-  req: any,
-  res: Response,
-  next: NextFunction
-) {
+export async function updateRole(req: any, res: Response, next: NextFunction) {
   const { roleId, permissions, name } = req.body;
 
   const ability = defineAbilitiesFor(req.auth);
@@ -94,7 +97,11 @@ export async function updateRole(
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
 
-    const updatedRole = await updateRolePermissionsPrisma(roleId, permissions, name);
+    const updatedRole = await updateRolePermissionsPrisma(
+      roleId,
+      permissions,
+      name
+    );
     return res.status(201).json(updatedRole);
   } catch (error) {
     return next(error);
@@ -116,12 +123,12 @@ export async function getRoles(req: any, res: Response, next: NextFunction) {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
 
-    const roles = await getRolesByRestaurantIdPrisma(
+    const { roles, rowCount } = await getRolesByRestaurantIdPrisma(
       req.auth.role.restaurantId,
       paginationInfo,
       {
         isActive,
-        search
+        search,
       }
     );
 
@@ -129,22 +136,25 @@ export async function getRoles(req: any, res: Response, next: NextFunction) {
 
     return res
       .status(200)
-      .json({ data: rolesView, pagination: paginationInfo });
+      .json({ data: rolesView, pagination: { ...paginationInfo, rowCount } });
   } catch (error) {
     return next(error);
   }
 }
 
-
-export async function getRolePermissions(req: any, res: Response, next: NextFunction) {
-  const {roleId} = req.params;
+export async function getRolePermissions(
+  req: any,
+  res: Response,
+  next: NextFunction
+) {
+  const { roleId } = req.params;
 
   const ability = defineAbilitiesFor(req.auth);
 
   try {
-    const role = await getRoleById(parseInt( roleId ))
+    const role = await getRoleById(parseInt(roleId));
 
-    if(!role) {
+    if (!role) {
       return res.status(404).json({ message: "Role Not Found!" });
     }
 
@@ -152,19 +162,69 @@ export async function getRolePermissions(req: any, res: Response, next: NextFunc
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
 
-    const allPermissions = await getAllPermissionsPrisma()
+    const allPermissions = await getAllPermissionsPrisma();
 
-    const permissions = allPermissions.map((permission ) => (
-      {
-            "id": permission.id,
-    "name": permission.name,
-        isSelected: role.permissions.find(perm => perm.id === permission.id)   ? true: false
-      }
-    ))
+    const permissions = allPermissions.map((permission) => ({
+      id: permission.id,
+      name: permission.name,
+      isSelected: role.permissions.find((perm) => perm.id === permission.id)
+        ? true
+        : false,
+    }));
 
-    return res
-      .status(200)
-      .json(permissions);
+    return res.status(200).json(permissions);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getMyPermissions(
+  req: any,
+  res: Response,
+  next: NextFunction
+) {
+  const roleId = req.auth.role.id;
+
+  try {
+    const role = await getRoleById(parseInt(roleId));
+
+    if (!role) {
+      return res.status(404).json({ message: "Role Not Found!" });
+    }
+
+
+    return res.status(200).json(role.permissions);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function changeActivity(
+  req: any,
+  res: Response,
+  next: NextFunction
+) {
+  const { isActive } = req.body;
+  const { roleId } = req.params;
+
+  const ability = defineAbilitiesFor(req.auth);
+  const role = await getRoleById(parseInt(roleId));
+
+  if (!role) {
+    return res.status(404).json({ message: "Role not found!" });
+  }
+
+  try {
+    if (ability.cannot("manageRole", subject("Role", role))) {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+
+    const updatedRole = await changeRoleActivityPrisma(
+      parseInt(roleId),
+      isActive
+    );
+
+    return res.status(201).json(updatedRole);
   } catch (error) {
     return next(error);
   }

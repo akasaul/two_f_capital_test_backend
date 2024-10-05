@@ -6,6 +6,13 @@ export async function getAvailableToppings() {
   return toppings;
 }
 
+export async function getAvailableToppingsForARestaurant(restaurantId: number) {
+  const toppings = await prisma.topping.findMany({
+    where: { restaurantId },
+  });
+  return toppings;
+}
+
 export async function createToppingPrisma(toppingData: Omit<Topping, "id">) {
   const topping = await prisma.topping.create({
     data: toppingData,
@@ -19,6 +26,15 @@ export async function getToppingsWithIds(toppingIds: number[]) {
       id: {
         in: toppingIds,
       },
+    },
+  });
+  return toppings;
+}
+
+export async function getToppingsFromRestaurantPrisma(restaurantId: number) {
+  const toppings = await prisma.topping.findMany({
+    where: {
+      restaurantId,
     },
   });
   return toppings;

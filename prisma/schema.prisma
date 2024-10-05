@@ -15,7 +15,7 @@ model User {
   phoneNumber String       @unique
   password    String
   roleId      Int
-  Role        Role         @relation(fields: [roleId], references: [id])
+  Role        Role         @relation(fields: [roleId], references: [id], onDelete: Cascade)
   Restaurant  Restaurant[]
   Order       Order[]
 }
@@ -27,7 +27,7 @@ model Role {
   permissions  Permission[] @relation("RolePermissions")
   priceUser    User[]
   restaurantId Int?
-  Restaurant   Restaurant?  @relation(fields: [restaurantId], references: [id])
+  Restaurant   Restaurant?  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   createdAt    DateTime     @default(now())
 }
 
@@ -44,7 +44,7 @@ model Pizza {
   name         String
   price        Float
   pizzaCover   String
-  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int
   toppings     Topping[]  @relation("PizzaToppings")
   Order        Order[]
@@ -55,7 +55,7 @@ model Topping {
   name         String
   price        Float
   pizzas       Pizza[]    @relation("PizzaToppings")
-  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int
   orders       Order[]    @relation("OrderToppings")
 }
@@ -66,7 +66,7 @@ model Restaurant {
   location    String
   logo        String
   phoneNumber String    @unique
-  manager     User      @relation(fields: [managerId], references: [id])
+  manager     User      @relation(fields: [managerId], references: [id], onDelete: Cascade)
   managerId   Int
   pizzas      Pizza[]
   Role        Role[]
@@ -84,11 +84,11 @@ model Order {
   id           Int         @id @default(autoincrement())
   userId       Int
   qty          Int
-  user         User        @relation(fields: [userId], references: [id])
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   restaurantId Int
-  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   pizzaId      Int
-  pizza        Pizza       @relation(fields: [pizzaId], references: [id])
+  pizza        Pizza       @relation(fields: [pizzaId], references: [id], onDelete: Cascade)
   toppings     Topping[]   @relation("OrderToppings")
   status       OrderStatus @default(PENDING)
   createdAt    DateTime    @default(now())

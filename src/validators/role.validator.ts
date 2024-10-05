@@ -15,7 +15,6 @@ export const getRolesValidator = z.object({
   search: z.string().optional(),
 });
 
-
 export const getRolePermissionsValidator = z.object({
   roleId: z.string(),
 });
@@ -24,4 +23,9 @@ export const assignPermisionValidator = z.object({
   roleId: z.number().min(1),
   permissions: z.array(z.number()).optional(),
   name: z.string().optional(),
+});
+
+export const changeActivityValidator = z.object({
+  roleId: z.string(),
+  isActive: z.boolean(),
 });

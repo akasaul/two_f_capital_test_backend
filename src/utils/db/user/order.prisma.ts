@@ -69,6 +69,58 @@ export async function getOrdersRestaurantPrisma(
 ) {
   const { page, limit } = pagination;
 
+  const rowCount = await prisma.order.count({
+    where: {
+      restaurantId,
+      ...(filters?.status && {
+        status: filters?.status,
+      }),
+      ...(filters?.toppings && {
+        OR: [
+          {
+            pizza: {
+              toppings: {
+                some: {
+                  id: {
+                    in: JSON.parse(filters?.toppings),
+                  },
+                },
+              },
+            },
+          },
+          {
+            toppings: {
+              some: {
+                id: {
+                  in: JSON.parse(filters?.toppings),
+                },
+              },
+            },
+          },
+        ],
+      }),
+      ...(search && {
+        OR: [
+          {
+            pizza: {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          },
+          {
+            user: {
+              phoneNumber: {
+                contains: search,
+              },
+            },
+          },
+        ],
+      }),
+    },
+  });
+
   const orders = await prisma.order.findMany({
     where: {
       restaurantId,
@@ -131,7 +183,7 @@ export async function getOrdersRestaurantPrisma(
     skip: (page - 1) * limit,
     take: limit,
   });
-  return orders;
+  return { orders, rowCount };
 }
 
 export const getOrderDetails = (orderId: number) => {

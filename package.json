@@ -38,6 +38,7 @@
   "dependencies": {
     "@casl/ability": "^6.7.1",
     "@casl/prisma": "^1.4.1",
+    "@casl/react": "^4.0.0",
     "@prisma/client": "^4.5.0",
     "@types/cors": "^2.8.17",
     "@types/multer": "^1.4.12",

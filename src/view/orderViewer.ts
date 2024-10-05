@@ -22,6 +22,7 @@ export const getMyOrdersViewer = (
     })),
     price: (pizza.price + sum) * order.qty,
     qty: order.qty,
+    status: order.status,
   };
   return orderView;
 };

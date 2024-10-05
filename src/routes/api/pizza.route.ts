@@ -9,6 +9,8 @@ import { authenticate } from "../../middleware/auth/authenticator.middleware";
 import { attachRole } from "../../middleware/auth/attachRole.middleware";
 import validateData from "../../middleware/validators/validateData.middleware";
 import { createPizzaValidator } from "../../validators/pizza.validator";
+import { uploadImage } from "../../utils/multer";
+import { attachFilePath } from "../../middleware/auth/attachFileUrl.middleware";
 
 const router = Router();
 
@@ -22,6 +24,8 @@ router.post(
   "/",
   authenticate,
   attachRole(),
+  uploadImage.single("pizzaCover"),
+  attachFilePath("pizzaCover"),
   validateData(createPizzaValidator),
   createPizza
 );
