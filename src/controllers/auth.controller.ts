@@ -13,7 +13,7 @@ import userGetEmailPrisma, {
 } from "../utils/db/user/user.prisma";
 import { compareWithHash, hashPassword } from "../utils/hashPasswords";
 import { restaurantManagerPermissions } from "../utils/permissions";
-import userViewer from "../view/userViewer";
+import { userViewer } from "../view/userViewer";
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   const { email, password } = req.body;
@@ -47,6 +47,7 @@ export async function register(
     const hashed = hashPassword(password);
     const user = await userCreatePrisma({
       email,
+      isActive: true,
       password: hashed,
       firstName,
       lastName,
@@ -83,6 +84,7 @@ export async function registerRestaurantAndManager(
 
     const user = await userCreatePrisma({
       email,
+      isActive: true,
       password: hashed,
       firstName,
       phoneNumber: rest.phoneNumber,
@@ -127,6 +129,7 @@ export async function registerRestaurantUser(
       phoneNumber: phoneNumber,
       lastName,
       roleId: role,
+      isActive: true,
     };
 
     if (ability.cannot("createUser", subject("Role", selectedRole))) {

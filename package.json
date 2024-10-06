@@ -4,7 +4,7 @@
   "description": "Pizza API for Two f capital Technologies test project",
   "main": "dist/server.js",
   "scripts": {
-    "build": "dotenv -e .env -- npx tsc",
+    "build": "pnpm install && dotenv -e .env -- npx tsc",
     "start": "node dist/server.js",
     "start:debug": "DEBUG=express:* node dist/server.js",
     "dev": "DEBUG=express:* dotenv -e .env.development -- npx ts-node-dev --rs --clear --exit-child src/server.ts",

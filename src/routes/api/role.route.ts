@@ -7,6 +7,7 @@ import {
   getRolePermissions,
   changeActivity,
   getMyPermissions,
+  getAllPermissions,
 } from "../../controllers/role.controller";
 import { attachRole } from "../../middleware/auth/attachRole.middleware";
 import { authenticate } from "../../middleware/auth/authenticator.middleware";
@@ -30,12 +31,9 @@ router.post(
   createRole
 );
 
-router.get(
-  "/my-permissions",
-  authenticate,
-  attachRole(),
- getMyPermissions  
-);
+router.get("/my-permissions", authenticate, attachRole(), getMyPermissions);
+
+router.get("/all-permissions", authenticate, attachRole(), getAllPermissions);
 
 router.get(
   "/:roleId/permissions",
@@ -62,19 +60,19 @@ router.put(
 );
 
 router.put(
-  "/:roleId/change-activity",
-  authenticate,
-  attachRole(),
-  validateData(changeActivityValidator),
-  changeActivity
-);
-
-router.put(
   "/assign-permissions",
   authenticate,
   attachRole(),
   validateData(assignPermisionValidator),
   updateRole
+);
+
+router.put(
+  "/:roleId/change-activity",
+  authenticate,
+  attachRole(),
+  validateData(changeActivityValidator),
+  changeActivity
 );
 
 export default router;

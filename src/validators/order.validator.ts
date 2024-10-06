@@ -17,7 +17,7 @@ export const getRestaurantOrderValidator = z.object({
 export const updateOrderStatusValidator = z.object({
   status: z.enum([
     orderStatuses.PENDING,
-    orderStatuses.PENDING,
+    orderStatuses.PREPARING,
     orderStatuses.DELIVERED,
   ]),
 });

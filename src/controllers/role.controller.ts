@@ -172,7 +172,7 @@ export async function getRolePermissions(
         : false,
     }));
 
-    return res.status(200).json(permissions);
+    return res.status(200).json({ permissions, name: role.name });
   } catch (error) {
     return next(error);
   }
@@ -191,7 +191,6 @@ export async function getMyPermissions(
     if (!role) {
       return res.status(404).json({ message: "Role Not Found!" });
     }
-
 
     return res.status(200).json(role.permissions);
   } catch (error) {
@@ -228,4 +227,14 @@ export async function changeActivity(
   } catch (error) {
     return next(error);
   }
+}
+
+export async function getAllPermissions(
+  req: any,
+  res: Response,
+  next: NextFunction
+) {
+  const allPermissions = await getAllPermissionsPrisma();
+
+  return res.status(201).json(allPermissions);
 }

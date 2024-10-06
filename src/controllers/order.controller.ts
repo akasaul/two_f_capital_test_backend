@@ -125,7 +125,7 @@ export const getOrdersRestaurant = async (
     }
 
     const { orders, rowCount } = await getOrdersRestaurantPrisma(
-      req.auth.user.restaurantId,
+      req.auth.role.restaurantId,
       paginationInfo,
       search,
       {
@@ -144,12 +144,10 @@ export const getOrdersRestaurant = async (
       )
     );
 
-    return res
-      .status(200)
-      .json({
-        data: restaurantOrdersViewer,
-        pagination: { ...paginationInfo, rowCount },
-      });
+    return res.status(200).json({
+      data: restaurantOrdersViewer,
+      pagination: { ...paginationInfo, rowCount },
+    });
   } catch (error) {
     return next(error);
   }

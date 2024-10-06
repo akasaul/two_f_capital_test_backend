@@ -18,6 +18,7 @@ model User {
   Role        Role         @relation(fields: [roleId], references: [id], onDelete: Cascade)
   Restaurant  Restaurant[]
   Order       Order[]
+  isActive    Boolean      @default(true)
 }
 
 model Role {

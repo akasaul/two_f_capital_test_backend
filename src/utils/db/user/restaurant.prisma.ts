@@ -1,4 +1,5 @@
-import { Restaurant } from "@prisma/client";
+import { Restaurant, User } from "@prisma/client";
+import { Pagination } from "../../types";
 import prisma from "../prisma";
 
 export async function createRestaurantPrisma(
@@ -41,4 +42,33 @@ export async function getTopRestaurantsPrisma() {
     },
   });
   return restaurants;
+}
+
+export async function getRestaurantUsersPrisma(
+  restaurantId: number,
+  pagination: Pagination
+) {
+  const { page, limit } = pagination;
+  const restaurants = await prisma.role.findMany({
+    where: {
+      restaurantId,
+    },
+    distinct: "id",
+    include: {
+      priceUser: true,
+    },
+  });
+  const users: User[] = [];
+
+  restaurants.forEach((restaurant) => {
+    users.push(...restaurant.priceUser);
+  });
+
+  const skip = (page - 1) * limit;
+  const take = skip + limit;
+  const rowCount = users.length;
+
+  const restaurantsLimit = users.slice(skip, take);
+
+  return { users: restaurantsLimit, pagination: { ...pagination, rowCount } };
 }
