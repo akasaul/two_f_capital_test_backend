@@ -128,3 +128,16 @@ export async function getRolesByRestaurantIdPrisma(
   });
   return { roles, rowCount };
 }
+
+
+export async function deleteRolePrisma(
+  roleId: number,
+) {
+  const role = await prisma.role.delete({
+    where: {
+      id: roleId,
+    },
+  });
+  return role;
+}
+

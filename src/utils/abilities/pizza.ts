@@ -26,7 +26,11 @@ type AppAbility = PureAbility<
   PrismaQuery
 >;
 
-interface PopulatedRole extends Role {
+interface CustomRole extends Role {
+  isUserActive: boolean;
+}
+
+interface PopulatedRole extends CustomRole {
   permissions: Permission[];
 }
 
@@ -95,7 +99,7 @@ else if (
     }
   });
 
-  if (!user.role.isActive) {
+  if (!user.role.isActive || !user.role.isUserActive) {
     user.role.permissions.forEach((permission) => {
       cannot(permission.action, permission.subject as "User" | "Pizza");
     });

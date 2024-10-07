@@ -24,6 +24,7 @@ export const attachRole = () => {
       }
 
       req.auth.role = userWithRole.Role;
+      req.auth.role.isUserActive = userWithRole.isActive;
 
       next();
     } catch (error) {

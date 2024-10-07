@@ -2,6 +2,7 @@ import { subject } from "@casl/ability";
 import { NextFunction, Request, Response } from "express";
 import { defineAbilitiesFor } from "../utils/abilities/pizza";
 import createUserToken from "../utils/auth/createUserToken";
+import { getAllPermissionsPrisma } from "../utils/db/user/permissions.prisma";
 import { createRestaurantPrisma } from "../utils/db/user/restaurant.prisma";
 import {
   createRolePrisma,
@@ -12,7 +13,6 @@ import userGetEmailPrisma, {
   userCreatePrisma,
 } from "../utils/db/user/user.prisma";
 import { compareWithHash, hashPassword } from "../utils/hashPasswords";
-import { restaurantManagerPermissions } from "../utils/permissions";
 import { userViewer } from "../view/userViewer";
 
 export async function login(req: Request, res: Response, next: NextFunction) {
@@ -72,6 +72,8 @@ export async function registerRestaurantAndManager(
   try {
     const hashed = hashPassword(password);
 
+    const managerPermissions = await getAllPermissionsPrisma()
+
     const role = await createRolePrisma(
       {
         name: "restaurantManager",
@@ -79,7 +81,7 @@ export async function registerRestaurantAndManager(
         isActive: true,
         createdAt: new Date(),
       },
-      restaurantManagerPermissions
+      managerPermissions.map(permission => permission.id)
     );
 
     const user = await userCreatePrisma({

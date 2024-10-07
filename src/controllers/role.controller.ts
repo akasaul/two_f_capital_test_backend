@@ -7,6 +7,7 @@ import { getRestaurantByManagerId } from "../utils/db/user/restaurant.prisma";
 import {
   changeRoleActivityPrisma,
   createRolePrisma,
+  deleteRolePrisma,
   getRoleById,
   getRolesByRestaurantIdPrisma,
   updateRolePermissionsPrisma,
@@ -237,4 +238,34 @@ export async function getAllPermissions(
   const allPermissions = await getAllPermissionsPrisma();
 
   return res.status(201).json(allPermissions);
+}
+
+
+export async function deleteRole(
+  req: any,
+  res: Response,
+  next: NextFunction
+) {
+  const { roleId } = req.params;
+
+  const ability = defineAbilitiesFor(req.auth);
+  const role = await getRoleById(parseInt(roleId));
+
+  if (!role) {
+    return res.status(404).json({ message: "Role not found!" });
+  }
+
+  try {
+    if (ability.cannot("manageRole", subject("Role", role))) {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+
+    const deletedRole = await deleteRolePrisma(
+      parseInt(roleId),
+    );
+
+    return res.status(201).json(deletedRole);
+  } catch (error) {
+    return next(error);
+  }
 }

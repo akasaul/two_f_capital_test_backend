@@ -72,3 +72,31 @@ export async function getRestaurantUsersPrisma(
 
   return { users: restaurantsLimit, pagination: { ...pagination, rowCount } };
 }
+
+export const getUserByIdPrisma = async (userId: number) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      Role: true,
+    },
+  });
+  return user;
+};
+
+export const updateUserActivityPrisma = async (
+  userId: number,
+  isActive: boolean
+) => {
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: { isActive },
+  });
+  return user;
+};
+
+export const deleteUserPrisma = async (userId: number) => {
+  const user = await prisma.user.delete({
+    where: { id: userId },
+  });
+  return user;
+};

@@ -29,3 +29,22 @@ export const changeActivityValidator = z.object({
   roleId: z.string(),
   isActive: z.boolean(),
 });
+
+export const changeUserActivityValidator = z.object({
+  id: z.string().regex(/^\d+$/, {
+    message: "id must be a number",
+  }),
+  isActive: z.boolean(),
+});
+
+export const deleteRestaurantUserValidator = z.object({
+  id: z.string().regex(/^\d+$/, {
+    message: "id must be a number",
+  }),
+});
+
+export const deleteRoleValidator = z.object({
+  roleId: z.string().regex(/^\d+$/, {
+    message: "id must be a number",
+  }),
+});

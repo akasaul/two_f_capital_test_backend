@@ -8,6 +8,7 @@ import {
   changeActivity,
   getMyPermissions,
   getAllPermissions,
+  deleteRole,
 } from "../../controllers/role.controller";
 import { attachRole } from "../../middleware/auth/attachRole.middleware";
 import { authenticate } from "../../middleware/auth/authenticator.middleware";
@@ -17,6 +18,7 @@ import {
   assignRoleValidator,
   changeActivityValidator,
   createRoleValidator,
+  deleteRoleValidator,
   getRolePermissionsValidator,
   getRolesValidator,
 } from "../../validators/role.validator";
@@ -73,6 +75,14 @@ router.put(
   attachRole(),
   validateData(changeActivityValidator),
   changeActivity
+);
+
+router.delete(
+  "/:roleId",
+  authenticate,
+  attachRole(),
+  validateData(deleteRoleValidator),
+  deleteRole
 );
 
 export default router;
