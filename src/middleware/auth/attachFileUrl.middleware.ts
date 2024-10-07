@@ -7,7 +7,8 @@ export const attachFilePath =
     console.log("attach file path");
     if (req.file) {
       req.body[key] =
-        `http://localhost:${process.env.PORT}/static/` + req.file.filename;
+        `https://two-f-capital-test-backend.onrender.com/static/` +
+        req.file.filename;
     }
     next();
   };
